@@ -28,7 +28,10 @@ CREATE TABLE Customers
     LastName        varchar(60)     NOT NULL,
     [Address]       varchar(40)     NOT NULL,
     City            varchar(35)     NOT NULL,
-    Province        char(2)         NOT NULL,
+    Province        char(2)         
+        CONSTRAINT DF_Customers_Province
+            DEFAULT ('AB')                    -- Strings are in single quotes
+                                    NOT NULL,
     PostalCode      char(6)         NOT NULL,
     PhoneNumber     char(13)            NULL  -- Optional - can be "blank"
 )
@@ -74,7 +77,10 @@ CREATE TABLE OrderDetails
         CONSTRAINT FK_OrderDetails_ItemNumber_InventoryItems_ItemNumber
         FOREIGN KEY REFERENCES
             InventoryItems(ItemNumber)  NOT NULL,
-    Quantity            smallint        NOT NULL,
+    Quantity            smallint        
+        CONSTRAINT DF_OrderDetails_Quantity
+            DEFAULT (1)
+                                        NOT NULL,
     SellingPrice        money           NOT NULL,
     Amount              money           NOT NULL,
     -- The following is a Table Constraint
