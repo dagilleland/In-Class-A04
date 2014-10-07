@@ -21,7 +21,7 @@ GO
 CREATE TABLE Customers
 (
     CustomerNumber  int
-		CONSTRAINT PK_Customers_CustomerNumber
+        CONSTRAINT PK_Customers_CustomerNumber
         PRIMARY KEY
         IDENTITY(100, 1)            NOT NULL, -- NOT NULL when data is Required
     FirstName       varchar(50)     NOT NULL,
@@ -30,7 +30,7 @@ CREATE TABLE Customers
     City            varchar(35)     NOT NULL,
     Province        char(2)         NOT NULL,
     PostalCode      char(6)         NOT NULL,
-    PhoneNumber     char(13)		    NULL  -- Optional - can be "blank"
+    PhoneNumber     char(13)            NULL  -- Optional - can be "blank"
 )
 GO
 
@@ -38,16 +38,16 @@ CREATE TABLE CustomerOrders
 (
     OrderNumber     int
         CONSTRAINT PK_CustomerOrders_OrderNumber
-			PRIMARY KEY
+            PRIMARY KEY
         IDENTITY(200,1)                 NOT NULL,
     CustomerNumber  int
         CONSTRAINT FK_CustomerOrders_CustomerNumber_Customers_CustomerNumber
-		FOREIGN KEY REFERENCES
+        FOREIGN KEY REFERENCES
             Customers(CustomerNumber)   NOT NULL,
     [Date]          datetime            NOT NULL,
     Subtotal        money               NOT NULL,
     GST             money               NOT NULL,
-    Total           money				NOT NULL
+    Total           money                NOT NULL
 )
 GO
 
@@ -55,11 +55,11 @@ CREATE TABLE InventoryItems
 (
     ItemNumber          varchar(5)
         CONSTRAINT PK_InventoryItems_ItemNumber
-		PRIMARY KEY                     NOT NULL,
+        PRIMARY KEY                     NOT NULL,
     ItemDescription     varchar(50)     NOT NULL,
     CurrentSalePrice    money           NOT NULL,
     InStockCount        int             NOT NULL,
-    ReorderLevel        int				NOT NULL
+    ReorderLevel        int                NOT NULL
 )
 GO
 
@@ -67,18 +67,18 @@ GO
 CREATE TABLE OrderDetails
 (
     OrderNumber         int
-		CONSTRAINT FK_OrderDetails_OrderNumber_CustomerOrders_OrderNumber
+        CONSTRAINT FK_OrderDetails_OrderNumber_CustomerOrders_OrderNumber
         FOREIGN KEY REFERENCES
             CustomerOrders(OrderNumber) NOT NULL,
     ItemNumber          varchar(5)
-		CONSTRAINT FK_OrderDetails_ItemNumber_InventoryItems_ItemNumber
+        CONSTRAINT FK_OrderDetails_ItemNumber_InventoryItems_ItemNumber
         FOREIGN KEY REFERENCES
             InventoryItems(ItemNumber)  NOT NULL,
     Quantity            smallint        NOT NULL,
     SellingPrice        money           NOT NULL,
     Amount              money           NOT NULL,
     -- The following is a Table Constraint
-	CONSTRAINT PK_OrderDetails_OrderNumber_ItemNumber
+    CONSTRAINT PK_OrderDetails_OrderNumber_ItemNumber
     PRIMARY KEY (OrderNumber, ItemNumber)
 )
 
