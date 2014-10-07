@@ -67,15 +67,18 @@ GO
 CREATE TABLE OrderDetails
 (
     OrderNumber         int
+		CONSTRAINT FK_OrderDetails_OrderNumber_CustomerOrders_OrderNumber
         FOREIGN KEY REFERENCES
             CustomerOrders(OrderNumber) NOT NULL,
     ItemNumber          varchar(5)
+		CONSTRAINT FK_OrderDetails_ItemNumber_InventoryItems_ItemNumber
         FOREIGN KEY REFERENCES
             InventoryItems(ItemNumber)  NOT NULL,
     Quantity            smallint        NOT NULL,
     SellingPrice        money           NOT NULL,
     Amount              money           NOT NULL,
     -- The following is a Table Constraint
+	CONSTRAINT PK_OrderDetails_OrderNumber_ItemNumber
     PRIMARY KEY (OrderNumber, ItemNumber)
 )
 
