@@ -31,6 +31,20 @@ CREATE TABLE Customers
     Province        char(2)         
         CONSTRAINT DF_Customers_Province
             DEFAULT ('AB')                    -- Strings are in single quotes
+        CONSTRAINT CK_Customers_Province
+            CHECK  (Province LIKE 'AB' OR
+                    Province LIKE 'BC' OR
+                    Province LIKE 'SK' OR
+                    Province LIKE 'MB' OR
+                    Province LIKE 'QC' OR
+                    Province LIKE 'ON' OR
+                    Province LIKE 'NT' OR
+                    Province LIKE 'NS' OR
+                    Province LIKE 'NB' OR
+                    Province LIKE 'NL' OR
+                    Province LIKE 'YK' OR
+                    Province LIKE 'NU' OR
+                    Province LIKE 'PE')
                                     NOT NULL,
     PostalCode      char(6)         NOT NULL,
     PhoneNumber     char(13)            NULL  -- Optional - can be "blank"
