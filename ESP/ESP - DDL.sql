@@ -48,9 +48,15 @@ CREATE TABLE CustomerOrders
         FOREIGN KEY REFERENCES
             Customers(CustomerNumber)   NOT NULL,
     [Date]          datetime            NOT NULL,
-    Subtotal        money               NOT NULL,
-    GST             money               NOT NULL,
-    Total           money                NOT NULL
+    Subtotal        money               
+        CONSTRAINT CK_CustomerOrders_Subtotal
+            CHECK (Subtotal > 0)
+                                        NOT NULL,
+    GST             money               
+        CONSTRAINT CK_CustomerOrders_GST
+            CHECK (GST >= 0)
+                                        NOT NULL,
+    Total           money               NOT NULL
 )
 GO
 
@@ -60,7 +66,10 @@ CREATE TABLE InventoryItems
         CONSTRAINT PK_InventoryItems_ItemNumber
         PRIMARY KEY                     NOT NULL,
     ItemDescription     varchar(50)     NOT NULL,
-    CurrentSalePrice    money           NOT NULL,
+    CurrentSalePrice    money           
+        CONSTRAINT CK_Item_CurrentSalePrice
+            CHECK (CurrentSalePrice > 0)
+                                        NOT NULL,
     InStockCount        int             NOT NULL,
     ReorderLevel        int                NOT NULL
 )
@@ -80,8 +89,13 @@ CREATE TABLE OrderDetails
     Quantity            smallint        
         CONSTRAINT DF_OrderDetails_Quantity
             DEFAULT (1)
+        CONSTRAINT CK_OrderDetails_Quantity
+            CHECK (Quantity > 0)
                                         NOT NULL,
-    SellingPrice        money           NOT NULL,
+    SellingPrice        money           
+        CONSTRAINT CK_OrderDetails_SellingPrice
+            CHECK (SellingPrice >= 0)
+                                        NOT NULL,
     Amount              money           NOT NULL,
     -- The following is a Table Constraint
     CONSTRAINT PK_OrderDetails_OrderNumber_ItemNumber
