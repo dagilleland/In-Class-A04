@@ -4,7 +4,7 @@
    and ends with an asterix and slash
 */
 USE [ESP-Db] -- this is a statement that tells us to switch to a particular database
--- Notice in the database name above, I had to "wrap" the name in square brackets
+-- Notice in the data+base name above, I had to "wrap" the name in square brackets
 -- because the name had a hypen in it. 
 -- For our objects (tables, columns, etc), we won't use hypens or spaces, so
 -- the brackets are optional...
@@ -46,8 +46,16 @@ CREATE TABLE Customers
                     Province LIKE 'NU' OR
                     Province LIKE 'PE')
                                     NOT NULL,
-    PostalCode      char(6)         NOT NULL,
-    PhoneNumber     char(13)            NULL  -- Optional - can be "blank"
+    PostalCode      char(6)         
+        CONSTRAINT CK_Customers_PostalCode
+            CHECK (PostalCode LIKE
+                    '[A-Z][0-9][A-Z][0-9][A-Z][0-9]')
+                                    NOT NULL,
+    PhoneNumber     char(13)            
+        CONSTRAINT CK_Customers_PhoneNumber
+            CHECK (PhoneNumber LIKE
+                '([0-9][0-9][0-9])[0-9][0-9][0-9]-[0-9][0-9][0-9][0-9]')
+                                        NULL  -- Optional - can be "blank"
 )
 GO
 
