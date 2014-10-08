@@ -78,7 +78,7 @@ CREATE TABLE CustomerOrders
         CONSTRAINT CK_CustomerOrders_GST
             CHECK (GST >= 0)
                                         NOT NULL,
-    Total           money               NOT NULL
+    Total           AS Subtotal + GST   -- Compute the Total instead of storing it
 )
 GO
 
@@ -118,7 +118,7 @@ CREATE TABLE OrderDetails
         CONSTRAINT CK_OrderDetails_SellingPrice
             CHECK (SellingPrice >= 0)
                                         NOT NULL,
-    Amount              money           NOT NULL,
+    Amount            AS Quantity * SellingPrice, -- Computed Column
     -- The following is a Table Constraint
     CONSTRAINT PK_OrderDetails_OrderNumber_ItemNumber
     PRIMARY KEY (OrderNumber, ItemNumber)
