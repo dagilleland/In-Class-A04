@@ -29,6 +29,21 @@ USE [ESP-Db] -- this is a statement that tells us to switch to a particular data
 GO -- this statement helps to "separate" various DDL statements in our script
 
 /* DROP TABLE statements (to "clean up" the database for re-creation) */
+-- Tables from Specification Document 3
+IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'PurchaseOrderItems')
+    DROP TABLE PurchaseOrderItems
+IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'PurchaseOrders')
+    DROP TABLE PurchaseOrders
+IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'Suppliers')
+    DROP TABLE Suppliers
+
+-- Tables from Specification Document 2
+IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'PaymentLogDetails')
+    DROP TABLE PaymentLogDetails
+IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'Payments')
+    DROP TABLE Payments
+
+-- Tables from Specification Document 2
 IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'OrderDetails')
     DROP TABLE OrderDetails
 IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'InventoryItems')
@@ -244,40 +259,171 @@ DROP INDEX IX_Customers_LastName_FirstName
     ON  Customers
 GO
 
--- F) Add a Unique constraint to the Item's Description column
--- Unique constraints prevent duplicate values for a given column
-ALTER TABLE InventoryItems
-    ADD CONSTRAINT UX_InventoryItems_ItemDescription
-        UNIQUE (ItemDescription)
+-- F) Add additional tables: PaymentLogDetails, and Payments
+CREATE TABLE Payments
+(
+    PaymentID           int
+        CONSTRAINT PK_Payments_PaymentID
+            PRIMARY KEY
+        IDENTITY(1,1)                   NOT NULL,
+    [Date]              datetime        NOT NULL,
+    PaymentAmount       money           NOT NULL,
+    PaymentType         varchar(7)      
+        CONSTRAINT CK_Payments_PaymentType
+            CHECK  (PaymentType = 'Cash' OR
+                    PaymentType = 'Cheque' OR
+                    PaymentType = 'Credit')
+                                        NOT NULL
+)
 GO
 
----- G) Add additional tables: PaymentLogDetails, and Payment
+CREATE TABLE PaymentLogDetails
+(
+    OrderNumber         int
+        CONSTRAINT FK_PaymentLogDetails_OrderNumber_CustomerOrders_OrderNumber
+            FOREIGN KEY REFERENCES
+            CustomerOrders(OrderNumber) NOT NULL,
+    PaymentID           int
+        CONSTRAINT FK_PaymentLogDetails_PaymentID_Payments_PaymentID
+            FOREIGN KEY REFERENCES
+            Payments(PaymentID)         NOT NULL,
+    PaymentNumber       smallint        NOT NULL,
+    BalanceOwing        money           NOT NULL,
+    DepositBatchNumber  int             NOT NULL,
+    -- The following is a Table Constraint
+    CONSTRAINT PK_PaymentLogDetails_OrderNumber_PaymentID
+    PRIMARY KEY (OrderNumber, PaymentID)
+)
+GO
+
+/* **********************************************
+ * Specification Document 3 - Design Changes
+ *      Add additional tables with CREATE statments
+ * ******************************************* */
+-- G) Add additional tables: Suppliers, PurchaseOrders, and PurchaseOrderItems
+CREATE TABLE Suppliers
+(
+    SupplierNumber  int
+        CONSTRAINT PK_Suppliers_SupplierNumber
+        PRIMARY KEY
+        IDENTITY(100, 1)            NOT NULL,
+    SupplierName    varchar(65)     NOT NULL,
+    [Address]       varchar(40)     NOT NULL,
+    City            varchar(35)     NOT NULL,
+    Province        char(2)         
+        CONSTRAINT CK_Suppliers_Province
+            CHECK  (Province LIKE 'AB' OR
+                    Province LIKE 'BC' OR
+                    Province LIKE 'SK' OR
+                    Province LIKE 'MB' OR
+                    Province LIKE 'QC' OR
+                    Province LIKE 'ON' OR
+                    Province LIKE 'NT' OR
+                    Province LIKE 'NS' OR
+                    Province LIKE 'NB' OR
+                    Province LIKE 'NL' OR
+                    Province LIKE 'YK' OR
+                    Province LIKE 'NU' OR
+                    Province LIKE 'PE')
+                                    NOT NULL,
+    PostalCode      char(6)         
+        CONSTRAINT CK_Suppliers_PostalCode
+            CHECK (PostalCode LIKE
+                    '[A-Z][0-9][A-Z][0-9][A-Z][0-9]')
+                                    NOT NULL,
+    Phone           char(13)            
+        CONSTRAINT CK_Suppliers_Phone
+            CHECK (Phone LIKE
+                '([0-9][0-9][0-9])[0-9][0-9][0-9]-[0-9][0-9][0-9][0-9]')
+                                    NOT NULL
+)
+GO
+
+CREATE TABLE PurchaseOrders
+(
+    PurchaseOrderNumber     int
+        CONSTRAINT PK_PurchaseOrders_PurchaseOrderNumber
+            PRIMARY KEY
+        IDENTITY(1,1)                   NOT NULL,
+    SupplierNumber          int
+        CONSTRAINT FK_PurchaseOrders_SupplierNumber_Suppliers_SupplierNumber
+        FOREIGN KEY REFERENCES
+            Suppliers(SupplierNumber)   NOT NULL,
+    [Date]                  datetime    NOT NULL,
+    Subtotal                money               
+        CONSTRAINT CK_PurchaseOrders_Subtotal
+            CHECK (Subtotal > 0)
+                                        NOT NULL,
+    GST                     money               
+        CONSTRAINT CK_PurchaseOrders_GST
+            CHECK (GST >= 0)
+                                        NOT NULL,
+    Total           AS Subtotal + GST   -- Compute the Total instead of storing it
+)
+GO
+
+-- NOTE: Composite Keys are always written up as Table-Level Constraints
+CREATE TABLE PurchaseOrderItems
+(
+    PurchaseOrderNumber     int
+        CONSTRAINT FK_PurchaseOrderItems_PurchaseOrderNumber_PurchaseOrders_PurchaseOrderNumber
+        FOREIGN KEY REFERENCES
+            CustomerOrders(OrderNumber) NOT NULL,
+    ItemNumber              varchar(5)
+        CONSTRAINT FK_PurchaseOrderItems_ItemNumber_InventoryItems_ItemNumber
+        FOREIGN KEY REFERENCES
+            InventoryItems(ItemNumber)  NOT NULL,
+    SupplierItemNumber      varchar(25)     NULL,
+    SupplierDescription     varchar(25)     NULL,
+    Quantity                smallint        
+        CONSTRAINT DF_PurchaseOrderItems_Quantity
+            DEFAULT (1)
+        CONSTRAINT CK_PurchaseOrderItems_Quantity
+            CHECK (Quantity > 0)
+                                        NOT NULL,
+    Cost                    money           
+        CONSTRAINT CK_PurchaseOrderItems_Cost
+            CHECK (Cost >= 0)
+                                        NOT NULL,
+    Amount                  AS Quantity * Cost  , -- Computed Column
+    -- The following is a Table Constraint
+    CONSTRAINT PK_PurchaseOrderItems_PurchaseOrderNumber_ItemNumber
+    PRIMARY KEY (PurchaseOrderNumber, ItemNumber)
+)
+
+-- H) Add a Unique constraint to the Supplier's SupplierName column
+-- Unique constraints prevent duplicate values for a given column
+ALTER TABLE Suppliers
+    ADD CONSTRAINT UX_Suppliers_SupplierName
+        UNIQUE (SupplierName)
+GO
+
+-- I) Rename Column
+--      (not possible in a single ALTER statement in SQL Server,
+--       even though it is possible in other RDBMSs, like MySQL and Oracle.)
+--      You would have to 
+--          1) add a new column,
+--          2) copy data from the old column to the new column, and
+--          3) delete the old column 
+
  
 
----- H) Rename Column
-----      (not possible in a single ALTER statement in SQL Server,
-----       even though it is possible in other RDBMSs, like MySQL and Oracle.)
-----      You would have to 
-----          1) add a new column,
-----          2) copy data from the old column to the new column, and
-----          3) delete the old column 
 
-
---/* ***********************************************
--- * END OF SCRIPT - END OF SCRIPT - END OF SCRIPT *
--- * ********************************************* */
---/*
----- The following lines run a "stored procedure" to give information on the named table
----- Select these lines to see details on the tables.
---EXEC sp_help Customer
---GO
---EXEC sp_help [Order]
---GO
---EXEC sp_help Item
---GO
---EXEC sp_help OrderDetail
---GO
---*/
+/* ***********************************************
+ * END OF SCRIPT - END OF SCRIPT - END OF SCRIPT *
+ * ********************************************* */
+/*
+-- The following lines run a "stored procedure" to give information on the named table
+-- Select these lines to see details on the tables.
+EXEC sp_help Customers
+GO
+EXEC sp_help CustomerOrders
+GO
+EXEC sp_help InventoryItems
+GO
+EXEC sp_help OrderDetails
+GO
+*/
 
 
 
