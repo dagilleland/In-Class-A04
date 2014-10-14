@@ -6,6 +6,12 @@
 /** This script adds some data to a table, for demo purposes **/
 USE [ESP-Db]
 GO
+-- Clean out old information
+DELETE FROM OrderDetails
+DELETE FROM InventoryItems
+DELETE FROM CustomerOrders
+DELETE FROM Customers
+GO
 
 -- Add Customer Information
 INSERT INTO Customers(FirstName, LastName, [Address], City, Province, PostalCode, PhoneNumber)
