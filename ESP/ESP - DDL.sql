@@ -11,10 +11,14 @@ USE [ESP-Db] -- this is a statement that tells us to switch to a particular data
 GO -- this statement helps to "separate" various DDL statements in our script
 
 /* DROP TABLE statements (to "clean up" the database for re-creation) */
-DROP TABLE OrderDetails
-DROP TABLE InventoryItems
-DROP TABLE CustomerOrders
-DROP TABLE Customers
+IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'OrderDetails')
+    DROP TABLE OrderDetails
+IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'InventoryItems')
+    DROP TABLE InventoryItems
+IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'CustomerOrders')
+    DROP TABLE CustomerOrders
+IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'Customers')
+    DROP TABLE Customers
 GO
 
 -- To create a database table, we use the CREATE TABLE statement.
