@@ -109,7 +109,7 @@ CREATE TABLE InventoryItems
     ItemNumber          varchar(5)
         CONSTRAINT PK_InventoryItems_ItemNumber
         PRIMARY KEY                     NOT NULL,
-    ItemDescription     varchar(50)     NOT NULL,
+    ItemDescription     varchar(50)         NULL, -- Allow description to be NULL
     CurrentSalePrice    money           
         CONSTRAINT CK_Item_CurrentSalePrice
             CHECK (CurrentSalePrice > 0)
@@ -154,115 +154,130 @@ CREATE TABLE OrderDetails
  * ******************************************* */
 -- Syntax for ALTER TABLE can be found at
 --  http://msdn.microsoft.com/en-us/library/ms190273.aspx
+-- ALTER TABLE statements allow us to change an existing table without
+-- having to drop it or lose information in the table
 
 -- A) Allow Address, City, Province, Postal Code and Phone to be NULL
-ALTER TABLE Customer
-    ALTER COLUMN [Address] varchar(50) NULL
+ALTER TABLE Customers
+    ALTER COLUMN [Address] varchar(40) NULL
 GO
-ALTER TABLE Customer
-    ALTER COLUMN City varchar(40) NULL
+ALTER TABLE Customers
+    ALTER COLUMN City varchar(35) NULL
 GO
-ALTER TABLE Customer
-    ALTER COLUMN Province varchar(2) NULL
+ALTER TABLE Customers
+    ALTER COLUMN Province char(2) NULL
 GO
-ALTER TABLE Customer
-    ALTER COLUMN PostalCode char(7) NULL
+ALTER TABLE Customers
+    ALTER COLUMN PostalCode char(6) NULL
 GO
-ALTER TABLE Customer
-    ALTER COLUMN Phone char(13) NULL
-GO
+ALTER TABLE Customers
+    ALTER COLUMN PhoneNumber char(13) NULL
 
 -- B) Add a check constraint on First and Last name to require at least two letters
 /* -- Run these commented out statements to drop constraints, if needed - 
 ALTER TABLE Customer
-    DROP CONSTRAINT CK_Customer_FirstName
+    DROP CONSTRAINT CK_Customers_FirstName
 GO
 ALTER TABLE Customer
-    DROP CONSTRAINT CK_Customer_LastName
+    DROP CONSTRAINT CK_Customers_LastName
 GO
 */
-ALTER TABLE Customer
-    ADD CONSTRAINT CK_Customer_FirstName
+-- % is a wildcard for zero or more characters (letter, digit, or other character)
+ALTER TABLE Customers
+    ADD CONSTRAINT CK_Customers_FirstName
         CHECK (FirstName LIKE '__%') -- ANY 2 characters
 GO
-ALTER TABLE Customer
-    ADD CONSTRAINT CK_Customer_LastName
-        CHECK (LastName LIKE '[A-Z][A-Z]%') -- 2 Letters
+ALTER TABLE Customers
+    ADD CONSTRAINT CK_Customers_LastName
+        CHECK (LastName LIKE '[A-Z][A-Z]%') -- 2 or more Letters
 GO
 
--- C) Add a default constraint on the Order.[Date] to use the current date
-ALTER TABLE [Order]
-    ADD CONSTRAINT DF_Order_Date
+-- C) Add a default constraint on the CustomerOrders.Date to use the current date
+-- GETDATE() is a global function in the SQL Server Database
+-- GETDATE() will obtain the current date on the database server
+ALTER TABLE CustomerOrders
+    ADD CONSTRAINT DF_CustomerOrders_Date
         DEFAULT GETDATE() FOR [Date]
 GO
 
--- D) Change the Item.Description column to be NOT NULL
---    1) Put a Default constraint in place
-ALTER TABLE Item
-    ADD CONSTRAINT DF_Item_Description DEFAULT '-no description-' FOR [Description]
+-- D) Change the InventoryItems.ItemDescription column to be NOT NULL
+-- Create some sample data to demonstrate....
+INSERT INTO InventoryItems(ItemNumber, ItemDescription, CurrentSalePrice, InStockCount, ReorderLevel)
+    VALUES('GR35A', NULL, 45.95, 8, 5)
+GO
+
+--    1) Put a Default constraint in place (a good practice)
+ALTER TABLE InventoryItems
+    ADD CONSTRAINT DF_InventoryItems_Description DEFAULT '-no description-' FOR ItemDescription
+GO
+-- demonstrate that the default is in place
+INSERT INTO InventoryItems(ItemNumber, CurrentSalePrice, InStockCount, ReorderLevel)
+    VALUES('GR47D', 92.45, 3, 3)
 GO
 
 --    2) Update existing NULL columns with replacement text
-UPDATE  Item
-    SET     [Description] = '-missing-'
-    WHERE   [Description] IS NULL
+UPDATE  InventoryItems
+    SET     ItemDescription = '-missing-'
+    WHERE   ItemDescription IS NULL
 GO
 
 --    3) Change the column to be NOT NULL
-ALTER TABLE Item
-    ALTER COLUMN [Description] varchar(50)  NOT NULL
+ALTER TABLE InventoryItems
+    ALTER COLUMN ItemDescription varchar(50)  NOT NULL
 GO
 
 -- E) Add indexes to the Customer's First and Last Names 
 --    as well as to the Item's Description column.
-CREATE NONCLUSTERED INDEX IX_Customer_FirstName
-    ON  Customer ( FirstName )
+-- Indexes improve the performance of the database when retrieving information.
+CREATE NONCLUSTERED INDEX IX_Customers_FirstName
+    ON  Customers ( FirstName )
 GO
-CREATE NONCLUSTERED INDEX IX_Customer_LastName
-    ON  Customer ( LastName )
+CREATE NONCLUSTERED INDEX IX_Customers_LastName
+    ON  Customers ( LastName )
 GO
 --    This index is for two columns AS A GROUP
-CREATE NONCLUSTERED INDEX IX_Customer_LastName_FirstName
-    ON  Customer ( LastName, FirstName )
+CREATE NONCLUSTERED INDEX IX_Customers_LastName_FirstName
+    ON  Customers ( LastName, FirstName )
 GO
 --    To Drop an index, use the DROP INDEX statement
-DROP INDEX IX_Customer_LastName_FirstName
-    ON  Customer
+DROP INDEX IX_Customers_LastName_FirstName
+    ON  Customers
 GO
 
 -- F) Add a Unique constraint to the Item's Description column
-ALTER TABLE Item
-    ADD CONSTRAINT UX_Item_Description
-        UNIQUE (Description)
+-- Unique constraints prevent duplicate values for a given column
+ALTER TABLE InventoryItems
+    ADD CONSTRAINT UX_InventoryItems_ItemDescription
+        UNIQUE (ItemDescription)
 GO
 
--- G) Add additional tables: PaymentLogDetails, and Payment
+---- G) Add additional tables: PaymentLogDetails, and Payment
  
 
--- H) Rename Column
---      (not possible in a single ALTER statement in SQL Server,
---       even though it is possible in other RDBMSs, like MySQL and Oracle.)
---      You would have to 
---          1) add a new column,
---          2) copy data from the old column to the new column, and
---          3) delete the old column 
+---- H) Rename Column
+----      (not possible in a single ALTER statement in SQL Server,
+----       even though it is possible in other RDBMSs, like MySQL and Oracle.)
+----      You would have to 
+----          1) add a new column,
+----          2) copy data from the old column to the new column, and
+----          3) delete the old column 
 
 
-/* ***********************************************
- * END OF SCRIPT - END OF SCRIPT - END OF SCRIPT *
- * ********************************************* */
-/*
--- The following lines run a "stored procedure" to give information on the named table
--- Select these lines to see details on the tables.
-EXEC sp_help Customer
-GO
-EXEC sp_help [Order]
-GO
-EXEC sp_help Item
-GO
-EXEC sp_help OrderDetail
-GO
-*/
+--/* ***********************************************
+-- * END OF SCRIPT - END OF SCRIPT - END OF SCRIPT *
+-- * ********************************************* */
+--/*
+---- The following lines run a "stored procedure" to give information on the named table
+---- Select these lines to see details on the tables.
+--EXEC sp_help Customer
+--GO
+--EXEC sp_help [Order]
+--GO
+--EXEC sp_help Item
+--GO
+--EXEC sp_help OrderDetail
+--GO
+--*/
 
 
 
