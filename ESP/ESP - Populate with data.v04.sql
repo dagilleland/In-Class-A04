@@ -18,19 +18,19 @@ GO
 
 -- Add InventoryItems
 INSERT INTO InventoryItems(ItemNumber, ItemDescription, CurrentSalePrice, InStockCount, ReorderLevel)
-    VALUES('H23', 'Heater Fan Belt – 23"', 11.99, 5, 3)
+    VALUES('H23', 'Heater Fan Belt - 23"', 11.99, 5, 3)
 INSERT INTO InventoryItems(ItemNumber, ItemDescription, CurrentSalePrice, InStockCount, ReorderLevel)
-    VALUES('H29', 'Heater Fan Belt – 29"', 12.49, 7, 4)
+    VALUES('H29', 'Heater Fan Belt - 29"', 12.49, 7, 4)
 INSERT INTO InventoryItems(ItemNumber, ItemDescription, CurrentSalePrice, InStockCount, ReorderLevel)
-    VALUES('H35', 'Heater Fan Belt – 35"', 12.99, 3, 2)
+    VALUES('H35', 'Heater Fan Belt - 35"', 12.99, 3, 2)
 INSERT INTO InventoryItems(ItemNumber, ItemDescription, CurrentSalePrice, InStockCount, ReorderLevel)
     VALUES('H319', 'Heater Fan Belt Support Brackets', 4.99, 10, 12)
 INSERT INTO InventoryItems(ItemNumber, ItemDescription, CurrentSalePrice, InStockCount, ReorderLevel)
-    VALUES('M24', 'Bolts – 24 mm', 0.29, 53, 50)
+    VALUES('M24', 'Bolts - 24 mm', 0.29, 53, 50)
 INSERT INTO InventoryItems(ItemNumber, ItemDescription, CurrentSalePrice, InStockCount, ReorderLevel)
-    VALUES('M26', 'Bolts – 26 mm', 0.29, 48, 50)
+    VALUES('M26', 'Bolts - 26 mm', 0.29, 48, 50)
 INSERT INTO InventoryItems(ItemNumber, ItemDescription, CurrentSalePrice, InStockCount, ReorderLevel)
-    VALUES('M28', 'Bolts – 28 mm', 0.29, 50, 50)
+    VALUES('M28', 'Bolts - 28 mm', 0.29, 50, 50)
 GO
 
 -- Add a customer order (with details)
