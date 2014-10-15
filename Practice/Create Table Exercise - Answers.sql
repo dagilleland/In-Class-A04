@@ -1,3 +1,5 @@
+-- Put a USE statement below this line to ensure this script uses the correct database
+
 IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'Activity')
     DROP TABLE Activity
 IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'Grade')
