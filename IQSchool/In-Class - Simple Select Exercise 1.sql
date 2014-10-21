@@ -26,10 +26,10 @@ FROM   Course
 WHERE  CourseID = 'DMIT101'
 -- TIP! You can use the sp_help stored procedure to get info on
 --      a database table.....
-sp_help Course
+-- sp_help Course -- sp_help gives us info about objects in the database, such as tables
 
 --5. Select the Staff names who have positionID of 3
-sp_help Staff
+-- sp_help Staff
 SELECT FirstName, LastName
 FROM   Staff
 WHERE  PositionID = 3
@@ -44,14 +44,33 @@ SELECT StudentID, CourseID, Mark
 FROM   Registration
 WHERE  Mark BETWEEN 70 AND 80
 
+-- 7.a Select the studentID's where the withdrawal status is null
+SELECT StudentID --, CourseId
+FROM   Registration
+WHERE  WithdrawYN IS NULL
 
+--8. Select the studentID's, CourseID and mark where the Mark is between 70 and 80 and the courseID is DMIT223 or DMIT168
+SELECT StudentID, CourseId, Mark
+FROM   Registration
+WHERE  Mark BETWEEN 70 AND 80
+  AND  (CourseId = 'DMIT223' OR CourseId = 'DMIT168')
+-- alternate answer to #8
+SELECT StudentID, CourseId, Mark
+FROM   Registration
+WHERE  Mark BETWEEN 70 AND 80
+  AND  CourseId IN ('DMIT223', 'DMIT168')
 
---8. Select the studentID's, CourseID and mark where the Mark is between 70 and 
---80 and the courseID is DMIT223 or DMIT168
 
 --9. Select the students first and last names who have last names starting with S
+SELECT FirstName, LastName
+FROM   Student
+WHERE  LastName LIKE 'S%'
 
 --10. Select Coursenames whose CourseID  have a 1 as the fifth character
+SELECT CourseName
+FROM   Course
+WHERE  CourseID LIKE '____1%' -- four underscores, 1, %
+     --               DMIT158
 
 --11. Select the CourseID's and Coursenames where the CourseName contains the word 'programming'
 
@@ -60,6 +79,26 @@ WHERE  Mark BETWEEN 70 AND 80
 --13. Select Student Names, Street Address and City where the lastName has only 3 letters long.
 
 --14. Select all the StudentID's where the PaymentAmount < 500 OR the PaymentTypeID is 5
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
