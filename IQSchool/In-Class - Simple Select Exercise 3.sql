@@ -11,13 +11,11 @@ FROM   Registration
 GROUP BY CourseID
 -- The GROUP BY clause should contain a list of all the non-aggregate columns identified in the SELECT clause
 
-
 --2. How many payments where made for each payment type. Display the Payment typeID and the count
 SELECT PaymentTypeID,
        COUNT(*) AS 'Count of Pay Type'
 FROM   Payment
 GROUP BY PaymentTypeID
-
 
 --3. Select the average Mark for each studentID. Display the StudentId and their average mark
 SELECT StudentID,
