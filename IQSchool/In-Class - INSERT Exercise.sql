@@ -53,15 +53,22 @@ VALUES ('Canon G2',25,1)
 INSERT INTO Item (ItemDescription,PricePerDay,ItemTypeID)
 VALUES ('100W tungston',18,2)
 
-INSERT INTO Item (ItemDescription,PricePerDay,ItemTypeID)
-VALUES ('Super flash',25,4)
 --Insert fails because the ItemTypeId (4) does not have a matching parent value in the relationship
 INSERT INTO Item (ItemDescription,PricePerDay,ItemTypeID)
+VALUES ('Super flash',25,4)
+
+INSERT INTO Item (ItemDescription,PricePerDay,ItemTypeID)
 VALUES ('Canon EOS20D',30,1)
-select * from item
+
+-- Notice as we look at what's inserted so far that the value 3 for ItemID does not appear.
+-- This value got "used up" as an identity value when the attempt to insert 'Super flash' failed.
+select * from item -- let's take a peek at the data.....
+
+
+-- RESUME HERE ON TUESDAY
+--ItemId is an identity field and as such is populated by the server not the user.
 INSERT INTO Item (ItemID, ItemDescription,PricePerDay,ItemTypeID)
 VALUES (5,'HP 630',25,1)
---ItemId is an identity field and as such is populated by the server not the user.
 
 INSERT INTO Item (ItemDescription,PricePerDay,ItemTypeID)
 VALUES( 'Holdomatic',22,
