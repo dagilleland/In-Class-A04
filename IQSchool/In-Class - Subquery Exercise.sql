@@ -19,37 +19,12 @@ FROM Payment P
         ON PT.PaymentTypeID = P.PaymentTypeID 
 WHERE PaymentTypeDescription = 'cash'
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 --2. SELECT The Student ID's of all the students that are in the 'Association of Computing Machinery' club
 SELECT StudentID 
 FROM Activity 
-WHERE clubID = 
+WHERE ClubId = 
     (SELECT ClubID 
-     FROM club 
+     FROM Club 
      WHERE ClubName = 'Association of Computing Machinery')
 
 SELECT StudentID 
@@ -58,135 +33,50 @@ FROM Activity A
         ON A.ClubId = C.ClubId
 WHERE ClubName = 'Association of Computing Machinery'
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 --3. SELECT All the staff full names that have taught a course.
-SELECT FirstName + ' ' + LastName 'Staff' 
+SELECT FirstName + ' ' + LastName AS 'Staff' 
 FROM Staff 
-WHERE StaffID IN (SELECT  StaffID FROM Registration)
-
-SELECT DISTINCT firstname + ' ' + lastname 'Staff' FROM staff INNER JOIN registration
-ON staff.StaffID = registration.StaffID 
+WHERE StaffID IN (SELECT DISTINCT StaffID FROM Registration)
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+SELECT DISTINCT FirstName + ' ' + LastName AS 'Staff'
+FROM Staff
+    INNER JOIN Registration
+        ON Staff.StaffID = Registration.StaffID 
 
 
 --4. SELECT All the staff full names that taught DMIT172.
-SELECT firstname + ' ' + lastname 'Staff' FROM staff 
-WHERE staffID in (SELECT StaffID FROM registration WHERE courseID = 'DMIT172')
+SELECT FirstName + ' ' + LastName AS 'Staff'
+FROM Staff 
+WHERE StaffID IN (SELECT StaffID 
+                  FROM Registration 
+                  WHERE CourseId = 'DMIT172')
 
-SELECT distinct firstname + ' ' + lastname 'Staff' FROM staff INNER JOIN registration
-ON staff.StaffID = registration.StaffID
-WHERE CourseId = 'dmit172'
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+SELECT DISTINCT FirstName + ' ' + LastName AS 'Staff'
+FROM Staff
+    INNER JOIN Registration
+        ON Staff.StaffID = Registration.StaffID
+WHERE CourseId = 'DMIT172'
 
 
 --5. SELECT All the staff full names that have never taught a course
-SELECT firstname + ' ' + lastname 'Staff' FROM staff 
-WHERE staffID not in (SELECT StaffID FROM registration)
+SELECT FirstName + ' ' + LastName AS 'Staff'
+FROM Staff 
+WHERE StaffID NOT IN (SELECT DISTINCT StaffID FROM Registration)
 
-SELECT firstname + ' ' + lastname 'Staff' FROM staff left outer join registration
-ON staff.StaffID =registration.StaffID
-WHERE registration.staffID is null
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+SELECT FirstName + ' ' + LastName 'Staff'
+FROM Staff 
+    LEFT OUTER JOIN Registration
+        ON Staff.StaffID =Registration.StaffID
+WHERE Registration.StaffID IS NULL
 
 --6. SELECT the Payment TypeID(s) that have the highest number of Payments made.
-SELECT PaymentTypeID FROM Payment
+SELECT PaymentTypeID
+FROM Payment
 GROUP BY PaymentTypeID 
-HAVING COUNT(*) >=ALL(SELECT COUNT(*) FROM Payment GROUP BY PaymentTypeID)
+HAVING COUNT(*) >= ALL (SELECT COUNT(*)
+                        FROM Payment
+                        GROUP BY PaymentTypeID)
 
 
 
