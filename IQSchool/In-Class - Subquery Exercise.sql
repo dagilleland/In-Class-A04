@@ -71,6 +71,12 @@ FROM Staff
 WHERE Registration.StaffID IS NULL
 
 --6. SELECT the Payment TypeID(s) that have the highest number of Payments made.
+/*
+-- Explore the counts of payment types, before you try the subquery
+SELECT PaymentTypeID, COUNT(PaymentTypeID)
+FROM   Payment
+GROUP BY PaymentTypeID
+*/
 SELECT PaymentTypeID
 FROM Payment
 GROUP BY PaymentTypeID 
