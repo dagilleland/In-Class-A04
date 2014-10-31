@@ -74,97 +74,30 @@ WHERE Registration.StaffID IS NULL
 SELECT PaymentTypeID
 FROM Payment
 GROUP BY PaymentTypeID 
-HAVING COUNT(*) >= ALL (SELECT COUNT(*)
-                        FROM Payment
-                        GROUP BY PaymentTypeID)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+HAVING COUNT(PaymentTypeID) >= ALL (SELECT COUNT(PaymentTypeID)
+                                    FROM Payment
+                                    GROUP BY PaymentTypeID)
 
 --7. SELECT the Payment Type Description(s) that have the highest number of Payments made.
-SELECT PaymentTypeDescription FROM Payment INNER JOIN PaymentType ON payment.paymenttypeid = paymenttype.paymenttypeid
-GROUP BY paymenttype.paymenttypeid,PaymentTypeDescription 
-HAVING COUNT(*) >=ALL(SELECT COUNT(*) FROM Payment GROUP BY PaymentTypeID)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+SELECT PaymentTypeDescription
+FROM   Payment 
+    INNER JOIN PaymentType 
+        ON Payment.PaymentTypeID = PaymentType.PaymentTypeID
+GROUP BY PaymentType.PaymentTypeID, PaymentTypeDescription 
+HAVING COUNT(PaymentType.PaymentTypeID) >= ALL (SELECT COUNT(PaymentTypeID)
+                                                FROM Payment 
+                                                GROUP BY PaymentTypeID)
 
 --8. What is the total avg mark for the students FROM Edm?
-SELECT avg(mark)'Average' FROM registration 
-WHERE studentID in (SELECT studentID FROM student WHERE city = 'Edm')
+SELECT AVG(Mark) AS 'Average'
+FROM   Registration 
+WHERE  StudentID IN (SELECT StudentID FROM Student WHERE City = 'Edm')
 
-SELECT AVG(mark)'Average' FROM registration INNER JOIN Student
-ON registration.StudentID = Student.StudentID
-WHERE city = 'Edm'
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+SELECT AVG(Mark) AS 'Average'
+FROM   Registration 
+    INNER JOIN Student
+        ON Registration.StudentID = Student.StudentID
+WHERE City = 'Edm'
 
 
 --9. What is the avg mark for each of the students FROM Edm? Display their StudentID and avg(mark)
