@@ -22,20 +22,30 @@ VALUES (2,'Lights')
 INSERT INTO itemType (ItemTypeID,ItemTypeDescription)
 VALUES (3,'Stand')
 
+--duplicate primary key value so the following insert fails
 INSERT INTO itemType (ItemTypeID,ItemTypeDescription)
 VALUES (2,'backdrop')
---duplicate primary key value so insert fails
 
+--ItemTypeId is larger than the int datatype for that field
 INSERT INTO itemType (ItemTypeID,ItemTypeDescription)
 VALUES (89899985225,'outfit')
---ItemTypeId is larger than the int datatype for that field
 
+--4A is a string and the ItemTypeID is an integer field
 INSERT INTO itemType (ItemTypeID,ItemTypeDescription)
 VALUES ('4A','Other')
---4A is a string and the ItemTypeID is an integer field
-go
+GO
+
 
 --2. Add the following records into the Item Table:
+-- ItemID    ItemDescription    PricePerDay    ItemTypeID
+--           Canon G2           25             1
+--           100W tungston      18             2
+--           Super Flash        25             4
+--           Canon EOS20D       30             1
+-- 5         HP 630             25             1
+--           Light Holdomatic   22             **
+            
+--**For Light Holdomatic the ItemType is a Stand. Use a subquery in this insert as we only know it is a stand and don’t know the ItemTypeID!
 
 INSERT INTO Item (ItemDescription,PricePerDay,ItemTypeID)
 VALUES ('Canon G2',25,1)
