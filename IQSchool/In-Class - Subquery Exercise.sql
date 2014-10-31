@@ -101,20 +101,29 @@ WHERE City = 'Edm'
 
 
 --9. What is the avg mark for each of the students FROM Edm? Display their StudentID and avg(mark)
-SELECT StudentID, AVG(mark)'Average' FROM registration
-WHERE studentID in (SELECT studentID FROM student WHERE city = 'Edm')
+SELECT  StudentID, 
+        AVG(Mark) AS 'Average'
+FROM Registration
+WHERE StudentID IN (SELECT StudentID FROM Student WHERE City = 'Edm')
 GROUP BY StudentID
 
-SELECT student.StudentID, AVG(mark)'Average' FROM registration INNER JOIN Student
-ON registration.StudentID = Student.StudentID
-WHERE city = 'Edm'
-group by student.StudentID
+SELECT Student.StudentID,
+       AVG(Mark) AS 'Average'
+FROM Registration 
+    INNER JOIN Student
+        ON Registration.StudentID = Student.StudentID
+WHERE City = 'Edm'
+GROUP BY Student.StudentID
 
---BAD
-SELECT StudentID, AVG(mark)'Average' FROM registration
+--BAD - but why??
+SELECT  StudentID, 
+        AVG(Mark) AS 'Average'
+FROM    Registration
 GROUP BY StudentID
-HAVING studentID IN (SELECT studentID FROM student WHERE city = 'Edm')
-
+HAVING   StudentID IN (SELECT StudentID FROM Student WHERE City = 'Edm')
+-- I don't like this, because a HAVING filter is intended for use with comparing Aggregate values,
+-- such as those from a COUNT(), MAX(), AVG(), etc.
+-- Since this filtering on StudentID does not involve aggregates, it should be done in a WHERE clause.
 
 
 
