@@ -1,3 +1,8 @@
+--OUTER JOINS EXERCISE 1
+--USE THE IQSCHOOL DATABASE 
+USE IQSchool
+GO
+
 --1. Select All position descriptions and the staff ID's that are in those positions
 SELECT PositionDescription, StaffID 
 FROM   Position P
