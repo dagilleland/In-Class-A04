@@ -65,18 +65,29 @@ VALUES ('Canon EOS20D',30,1)
 select * from item -- let's take a peek at the data.....
 
 
--- RESUME HERE ON TUESDAY
 --ItemId is an identity field and as such is populated by the server not the user.
 INSERT INTO Item (ItemID, ItemDescription,PricePerDay,ItemTypeID)
 VALUES (5,'HP 630',25,1)
 
+-- When we insert a row of data for a table where we need a foreign key,
+-- we can use a subquery to get the foreign key value off of some other known
+-- value in the related table.
 INSERT INTO Item (ItemDescription,PricePerDay,ItemTypeID)
 VALUES( 'Holdomatic',22,
 (Select ItemTypeId from ItemType where ItemTypeDescription = 'Stand'))
+-- P.S. - Since we are inserting a single row (the use of the VALUES keyword),
+--        we need to make sure that our subquery also returns a single row with
+--        a single value
 
 
 GO
 --3.  Add the following records into the StaffType Table:
+-- StaffTypeID    StaffTypeDescription
+-- 1              Videographer
+-- 2              Photographer
+-- 1              Mixer
+--                Sales
+-- 3              Sales
 
 INSERT INTO StaffType (StaffTypeID,StaffTypeDescription)
 VALUES (1,'Videographer')
@@ -86,31 +97,53 @@ INSERT INTO StaffType (StaffTypeID,StaffTypeDescription)
 VALUES (2,'Photographer')
 
 
+--duplicate primary key value so insert fails
 INSERT INTO StaffType (StaffTypeID,StaffTypeDescription)
 VALUES (1,'Mixer')
---duplicate primary key value so insert fails
 
+--Did not provide a value for the StaffTypeID field which is a not null field
 INSERT INTO StaffType (StaffTypeDescription)
 VALUES ('Sales')
---Did not provide a value for the StaffTypeID field which is a not null field
 
 
 INSERT INTO StaffType (StafftypeID,StaffTypeDescription)
 VALUES (3, 'Sales')
 
---4.  Add the following records into the Staff Table:
 GO
+
+--4.  Add the following records into the Staff Table:
+-- StaffID	StaffFirstName	StaffLastName	Phone	Wage	HireDate	StaffTypeID
+-- 1        Joe             Cool            5551223212	23	Jan 1 2007	1
+-- 1        Joe             Cool            5551223212	23	Apr 2 2012	1
+-- 2        Sue             Photo           5556676612	15	Apr 2 2012	3
+-- 3        Jason           Pic             3332342123	***	***	        2
+-- ***StaffID 3 will have the same wage as the highest wage of all the staff. HireDate will be the same hire date as Joe Cool. Use subqueries for these fields.
+
+--Check constraint on the table says that the hire date must be greater than or equal to todays date
 INSERT INTO Staff (StaffID,StaffFirstName,StaffLastName,Phone,Wage,HireDate,StaffTypeID)
 VALUES (1, 'Joe','Cool','5551223212',23,'Jan 1 2007',1)
---Check constraint on the table says that the hire date must be greater than or equal to todays date
 
 INSERT INTO Staff (StaffID,StaffFirstName,StaffLastName,Phone,Wage,HireDate,StaffTypeID)
-VALUES (1, 'Joe','Cool','5551223212',23,'Apr 2 2014',1)
+VALUES (1, 'Joe','Cool','5551223212',23,'Apr 2 2015',1)
 
 INSERT INTO Staff (StaffID,StaffFirstName,StaffLastName,Phone,Wage,HireDate,StaffTypeID)
-VALUES (2, 'Susan','Photo','5556676612',15,'Apr 2 2014',3)
+VALUES (2, 'Susan','Photo','5556676612',15,'Apr 2 2015',3)
 
 
-INSERT INTO Staff (StaffID,StaffFirstName,StaffLastName,Phone,Wage,HireDate,StaffTypeID)
-VALUES (3, 'Jason','Pic','3332342123',
-(Select max(wage) from Staff),(Select Hiredate from Staff where StaffFirstName = 'Joe' and StaffLastName ='Cool'),2)
+INSERT INTO Staff (StaffID,
+                   StaffFirstName,
+                   StaffLastName,
+                   Phone,
+                   Wage,
+                   HireDate,
+                   StaffTypeID)
+VALUES (3,
+       'Jason',
+       'Pic',
+       '3332342123',
+       (SELECT max(Wage) FROM Staff),
+       (SELECT Hiredate FROM Staff
+        WHERE  StaffFirstName = 'Joe'
+          AND  StaffLastName = 'Cool'),
+       2)
+
