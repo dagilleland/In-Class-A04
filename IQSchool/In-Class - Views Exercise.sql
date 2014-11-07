@@ -20,7 +20,8 @@ CREATE VIEW student_grades
 as
 SELECT Student.StudentID, 
        FirstName + ' ' + LastName AS 'Student Name',
-       Course.CourseId, CourseName, 
+       Course.CourseId, 
+       CourseName, 
        Mark
 FROM   Student 
     INNER JOIN Registration 
@@ -36,7 +37,7 @@ SELECT StudentID,
        CourseName,
        Mark
 FROM  student_grades
-WHERE StudentID = '199899200'
+WHERE StudentID = 199899200
 
 -- 5. Select the same information using the student_grades view for studentID 199912010.
 
