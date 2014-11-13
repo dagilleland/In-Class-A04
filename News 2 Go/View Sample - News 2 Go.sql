@@ -1,6 +1,8 @@
 USE [lab2-2014]
 GO
-
+IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.VIEWS WHERE TABLE_NAME = 'DropSiteDeliverOrders')
+    DROP VIEW DropSiteDeliverOrders
+GO
 CREATE VIEW DropSiteDeliverOrders
 AS
     SELECT  DS.DropSiteId AS 'Drop Site ID',
