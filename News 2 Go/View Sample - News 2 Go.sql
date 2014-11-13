@@ -15,8 +15,8 @@ AS
         INNER JOIN [Route] R ON DS.DropSiteId = R.DropSiteID
         INNER JOIN Carrier C ON R.CarrierId = C.CarrierID
 
+GO
 -- Select the Drop Site Delivery Orders for Drop Site #20
-
 SELECT [Drop Site ID]
       ,[Drop Site Name]
       ,[Drop Site Address]
